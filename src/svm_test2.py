@@ -24,7 +24,7 @@ from sklearn.decomposition import PCA
 import matplotlib.cm as cm
 
 start = time.time()
-
+print 'start time :',(start)
 # Import test data and labels
 #import_test = sio.loadmat(file_loc + 'Test.mat')
 import_train = sio.loadmat(file_loc + 'Train.mat')
@@ -52,9 +52,15 @@ h = .02  # step size in the mesh
 # data since we want to plot the support vectors
 C = 1.0  # SVM regularization parameter
 #svc = svm.SVC(kernel='linear', C=C).fit(X, y)
+t = time.time()
+print('calculating the rbf SVM classifier')
 rbf_svc = svm.SVC(kernel='rbf', gamma=0.00005, C=50).fit(X, y)
+print 'training the classifier took: ', (time.time() - t)
+t =time.time()
 #poly_svc = svm.SVC(kernel='poly', degree=3, C=C).fit(X, y)
+print('calculating the linear SVM classifier')
 lin_svc = svm.LinearSVC(C=C).fit(X, y)
+print 'training the classifier took: ', (time.time() - t)
 
 # create a mesh to plot in
 x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
@@ -68,7 +74,7 @@ titles = ['SVC with RBF kernel',
 #          'SVC with RBF kernel',
 #          'SVC with polynomial (degree 3) kernel']
 
-
+print('plotting the outcomes')
 for i, clf in enumerate((rbf_svc,lin_svc)):
     # Plot the decision boundary. For that, we will assign a color to each
     # point in the mesh [x_min, m_max]x[y_min, y_max].
