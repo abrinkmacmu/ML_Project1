@@ -80,7 +80,7 @@ for j in range(0,3):
     for i in range(0,5903):
         voxel_avg[i,j] = Xtrain[index,i].mean()
       
-thresh = .1
+thresh = [.3,.1,.2]
 
 subplot_val=[222,223,224]
 titles = ['class 0', 'class 1', 'class 3']
@@ -89,11 +89,22 @@ for j in range(0,3):
     ax = fig.add_subplot(subplot_val[j],projection='3d')
     plt.title(titles[j])
     for i in range(0,5903):
-        if( abs(voxel_avg[i,j] - voxel_global_avg[i]) > thresh):
+        if( abs(voxel_avg[i,j] - voxel_global_avg[i]) > thresh[j]):
             ax.scatter(x[i],y[i],z[i],c=color_val[j])
-    
 plt.show()
 
+
+fig = plt.figure()
+plt.hold('on')
+ax = fig.add_subplot(111,projection='3d')
+
+for j in range(0,3):
+    for i in range(0,5903):
+        if( abs(voxel_avg[i,j] - voxel_global_avg[i]) > thresh[j]):
+            ax.scatter(x[i],y[i],z[i],c=color_val[j])
+plt.show()
+
+'''
 # try another visualization
 fig = plt.figure()
 ax = fig.add_subplot(111,projection='3d')
@@ -106,3 +117,4 @@ for i in range(0,5903):
     elif( voxel_avg[i,2] == max_val):
         ax.scatter(x[i],y[i],z[i],c=color_val[2])
 plt.show()
+'''
