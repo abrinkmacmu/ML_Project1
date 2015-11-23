@@ -13,46 +13,42 @@ from sklearn.cross_validation import KFold
 from sklearn import svm
 from sklearn.feature_selection import SelectKBest
 import matplotlib.cm as cm
-from mpl_toolkits.mplot3d import Axes3D
-from sklearn import preprocessing
-from sklearn.decomposition import PCA
 # Import test data and labels
 import_test = sio.loadmat(file_loc + 'data/Test.mat')
 import_train = sio.loadmat(file_loc + 'data/Train.mat')
-X_train = import_train['Xtrain']
-X_testing = import_test['Xtest']
+
+Xtrain = import_train['Xtrain']
 Ytrain = import_train['Ytrain']
-subjectsTrain = import_train['subjectsTrain']
 eventsTrain = import_train['eventsTrain']
-
-#Standardization
-scaler = preprocessing.StandardScaler().fit(X_train)
-X_train = scaler.transform(X_train)
-X_testing = scaler.transform(X_testing)
-
-#PCA
-pca = PCA(n_components=450)
-pca.fit(X_train)
-print(pca.explained_variance_ratio_) 
-Xtrain_pca = pca.transform(X_train)
+subjectsTrain = import_train['subjectsTrain']
+x = import_train['x']
+y = import_train['y']
+z = import_train['z']
 
 
 
+# PCA
+'''
+from sklearn.decomposition import PCA
+pca = PCA(n_components = 10)
+pca.fit(Xtrain)
+print(pca.explained_variance_ratio_)
+Xtrain_pca = pca.transform(Xtrain)
+print( " Xtrain_pca share: ", Xtrain_pca.shape)
+'''
+from sklearn.decomposition import KernelPCA
+kpca = KernelPCA(kernel="rbf", degree=5, gamma=10)
+Xtrain_pca = kpca.fit_transform(Xtrain)
+print( " Xtrain Kernel PCA share: ", Xtrain_pca.shape)
+
+
+# plot principal components
 index_0 = np.where(Ytrain==0)[0]
 index_1 = np.where(Ytrain==1)[0]
 index_3 = np.where(Ytrain==3)[0]
 
-
-# plot principal components
-xlower = Xtrain_pca[index_0,:1].min()
-xupper = Xtrain_pca[index_0,:1].max()
-ylower = Xtrain_pca[index_0,1:2].min()
-yupper = Xtrain_pca[index_0,1:2].max()
-
 plt.figure()
 plt.hold('on')
-plt.xlim(xlower, xupper)
-plt.ylim(ylower, yupper)
 plt.scatter(Xtrain_pca[index_0,:1],Xtrain_pca[index_0,1:2], color="r")
 plt.scatter(Xtrain_pca[index_1,:1],Xtrain_pca[index_1,1:2], color="g")
 plt.scatter(Xtrain_pca[index_3,:1],Xtrain_pca[index_3,1:2], color="b")
@@ -77,8 +73,7 @@ for i in range(min(subjectsTrain),max(subjectsTrain)):
                 
     plt.subplot(5,6,i)
     plt.title("subject number: " + str(i))
-    plt.xlim(xlower, xupper)
-    plt.ylim(ylower, yupper)   
+    
     plt.scatter(Xtrain_pca[p_index_0,:1],Xtrain_pca[p_index_0,1:2], color="r")
     plt.scatter(Xtrain_pca[p_index_1,:1],Xtrain_pca[p_index_1,1:2], color="g")
     plt.scatter(Xtrain_pca[p_index_3,:1],Xtrain_pca[p_index_3,1:2], color="b")
@@ -106,8 +101,6 @@ for i in range(min(subjectsTrain),max(subjectsTrain)):
     color_array_3 = eventsTrain[p_index_3]/float(max(eventsTrain))
     plt.subplot(5,6,i)
     plt.title("subject number: " + str(i))
-    plt.xlim(xlower, xupper)
-    plt.ylim(ylower, yupper)
     plt.gray()
     plt.scatter(Xtrain_pca[p_index_0,:1],Xtrain_pca[p_index_0,1:2], c=color_array_0 )
     plt.scatter(Xtrain_pca[p_index_1,:1],Xtrain_pca[p_index_1,1:2], c=color_array_1 )
@@ -117,6 +110,7 @@ for i in range(min(subjectsTrain),max(subjectsTrain)):
 plt.show()
     
 #plt.plot()
+
 '''
 kf = KFold(len(Y),n_folds = 5)
 for train_index,test_index in kf:
@@ -134,5 +128,5 @@ for train_index,test_index in kf:
             print("correct label")
     performance = float(right)/float(len(Y_train))
     print("performance of : ", performance)
-    '''
-      
+
+      '''      

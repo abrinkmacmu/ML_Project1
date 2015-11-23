@@ -24,12 +24,14 @@ import_test = sio.loadmat(file_loc + 'Test.mat')
 import_train = sio.loadmat(file_loc + 'Train.mat')
 
 Y_train = import_train['Ytrain']
-
 X_train = import_train['Xtrain']
-
-
-
 X_test = import_test['Xtest']
+
+#Standardization
+from sklearn import preprocessing
+scaler = preprocessing.StandardScaler().fit(X_train)
+X_train = scaler.transform(X_train)
+X_test = scaler.transform(X_test)
 
 
 Y_kf = Y_train.ravel()
