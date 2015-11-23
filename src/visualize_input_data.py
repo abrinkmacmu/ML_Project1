@@ -8,7 +8,7 @@ Created on Sat Nov  7 09:29:12 2015
 import numpy as np
 import scipy.io as sio
 import matplotlib.pyplot as plt
-file_loc = '/home/apark/Homework/ML_project1/'
+file_loc = '/home/apark/Homework/ML_Project1/'
 from sklearn.cross_validation import KFold
 from sklearn import svm
 from sklearn.feature_selection import SelectKBest
@@ -17,7 +17,7 @@ import matplotlib.cm as cm
 import_test = sio.loadmat(file_loc + 'data/Test.mat')
 import_train = sio.loadmat(file_loc + 'data/Train.mat')
 
-Xtrain = import_train['Xtrain']
+
 Ytrain = import_train['Ytrain']
 eventsTrain = import_train['eventsTrain']
 subjectsTrain = import_train['subjectsTrain']
@@ -25,32 +25,40 @@ x = import_train['x']
 y = import_train['y']
 z = import_train['z']
 
+#Xtrain = import_train['Xtrain']
+Xtrain = np.zeros((501,5904))
+Xtrain[:,0:5903] = import_train['Xtrain']
+Xtrain[:,5903:5904] = import_train['eventsTrain']/1000.0
 
-''' 
-# SelectKBest 
-skb = SelectKBest()
-skb.fit(X,Y)
-print("Best Features: ", skb.get_support)
-X_downsampled = skb.transform(X)
-print("size of X_downsampled: ", X_downsampled.shape)
-'''
 
 # PCA
+'''
 from sklearn.decomposition import PCA
 pca = PCA(n_components = 10)
 pca.fit(Xtrain)
 print(pca.explained_variance_ratio_)
 Xtrain_pca = pca.transform(Xtrain)
 print( " Xtrain_pca share: ", Xtrain_pca.shape)
-
+'''
+from sklearn.decomposition import KernelPCA
+kpca = KernelPCA(kernel="rbf", degree=5, gamma=10)
+Xtrain_pca = kpca.fit_transform(Xtrain)
+print( " Xtrain Kernel PCA share: ", Xtrain_pca.shape)
 
 # plot principal components
 index_0 = np.where(Ytrain==0)[0]
 index_1 = np.where(Ytrain==1)[0]
 index_3 = np.where(Ytrain==3)[0]
 
+xlower = Xtrain_pca[index_0,:1].min()/2.0
+xupper = Xtrain_pca[index_0,:1].max()/2.0
+ylower = Xtrain_pca[index_0,1:2].min()/2.0
+yupper = Xtrain_pca[index_0,1:2].max()/2.0
+
 plt.figure()
 plt.hold('on')
+plt.xlim(xlower, xupper)
+plt.ylim(ylower, yupper)
 plt.scatter(Xtrain_pca[index_0,:1],Xtrain_pca[index_0,1:2], color="r")
 plt.scatter(Xtrain_pca[index_1,:1],Xtrain_pca[index_1,1:2], color="g")
 plt.scatter(Xtrain_pca[index_3,:1],Xtrain_pca[index_3,1:2], color="b")
@@ -75,7 +83,8 @@ for i in range(min(subjectsTrain),max(subjectsTrain)):
                 
     plt.subplot(5,6,i)
     plt.title("subject number: " + str(i))
-    
+    plt.xlim(xlower, xupper)
+    plt.ylim(ylower, yupper)   
     plt.scatter(Xtrain_pca[p_index_0,:1],Xtrain_pca[p_index_0,1:2], color="r")
     plt.scatter(Xtrain_pca[p_index_1,:1],Xtrain_pca[p_index_1,1:2], color="g")
     plt.scatter(Xtrain_pca[p_index_3,:1],Xtrain_pca[p_index_3,1:2], color="b")
@@ -95,14 +104,16 @@ for i in range(min(subjectsTrain),max(subjectsTrain)):
                 p_index_1.append(j)
             elif(Ytrain[j] == 3):
                 p_index_3.append(j)
-    print eventsTrain[p_index_0,:]
-    print max(eventsTrain)
-    print eventsTrain[p_index_0,:]/float(max(eventsTrain))
+    #print eventsTrain[p_index_0,:]
+    #print max(eventsTrain)
+    #print eventsTrain[p_index_0,:]/float(max(eventsTrain))
     color_array_0 = eventsTrain[p_index_0]/float(max(eventsTrain))
     color_array_1 = eventsTrain[p_index_1]/float(max(eventsTrain))
     color_array_3 = eventsTrain[p_index_3]/float(max(eventsTrain))
     plt.subplot(5,6,i)
     plt.title("subject number: " + str(i))
+    plt.xlim(xlower, xupper)
+    plt.ylim(ylower, yupper)
     plt.gray()
     plt.scatter(Xtrain_pca[p_index_0,:1],Xtrain_pca[p_index_0,1:2], c=color_array_0 )
     plt.scatter(Xtrain_pca[p_index_1,:1],Xtrain_pca[p_index_1,1:2], c=color_array_1 )

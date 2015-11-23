@@ -9,11 +9,11 @@ import numpy as np
 import scipy.io as sio
 import matplotlib.pyplot as plt
 import numpy as np
-file_loc = '/home/harp/ML_Project1/src/'
+file_loc = '/home/apark/Homework/ML_Project1/data/'
 from sklearn.cross_validation import KFold
 from sklearn import svm
 from sklearn.feature_selection import SelectKBest
-from sklearn.decomposition import PCA
+from sklearn.decomposition import PCA, KernelPCA
 from sklearn import cross_validation
 from sklearn.cross_validation import StratifiedKFold
 import matplotlib.cm as cm
@@ -24,9 +24,9 @@ import_train = sio.loadmat(file_loc + 'Train.mat')
 X_train = import_train['Xtrain']
 X_testing = import_test['Xtest']
 Y_train = import_train['Ytrain']
-pca = PCA(n_components=20)
-pca.fit(X_train)
-print(pca.explained_variance_ratio_) 
+pca = KernelPCA(kernel="rbf", degree=5, gamma=10)
+pca.fit_transform(X_train)
+#print(pca.explained_variance_ratio_) 
 X_train = pca.transform(X_train)
 #k_fold = cross_validation.KFold(len(X_train), 5)
 Y_kf = Y_train.ravel()
