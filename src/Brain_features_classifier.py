@@ -99,7 +99,7 @@ clusters[:,4]= np.dot(Xtest,negative_clusters[:,1])
 clusters[:,5]= np.dot(Xtest,negative_clusters[:,2])
 
 Clusterstest = clusters
-
+'''
 Y_kf = Ytrain.ravel()
 k_fold = StratifiedKFold(Y_kf, n_folds=5)
 print(k_fold)
@@ -135,7 +135,7 @@ for train, test in k_fold:
         else:
             print "decision tree accuracy", z
     
-    
+'''
 # create final classifier for test data
 y = Ytrain.ravel()
 NBclf = GaussianNB().fit(Clusterstrain,y)
@@ -147,8 +147,8 @@ Y_test_1 = lin_svc.predict(Xtest)
 rbf_svc = svm.SVC(kernel='rbf', gamma=0.0001, C=10, probability=True).fit(Xtrain, y)
 Y_test_2 = rbf_svc.predict(Xtest)
 
-Y_testing = np.zeros((len(Y_test),3))
-for i in range (0,len(Y_test)):
+Y_testing = np.zeros((len(Y_test_0),3))
+for i in range (0,len(Y_test_0)):
     if ((Y_test_0[i] == 0 and Y_test_1[i] == 0) or
         (Y_test_1[i] == 0 and Y_test_2[i] == 0) or
         (Y_test_0[i] == 0 and Y_test_2[i] == 0) ):

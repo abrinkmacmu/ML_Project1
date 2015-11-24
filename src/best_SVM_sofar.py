@@ -9,7 +9,7 @@ import numpy as np
 import scipy.io as sio
 import matplotlib.pyplot as plt
 import numpy as np
-file_loc = '/home/harp/ML_Project1/src/'
+file_loc = '/home/apark/Homework/ML_Project1/data/'
 from sklearn.cross_validation import KFold
 from sklearn import svm
 from sklearn.feature_selection import SelectKBest
