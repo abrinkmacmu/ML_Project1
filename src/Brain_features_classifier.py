@@ -137,28 +137,32 @@ for train, test in k_fold:
     
     
 # create final classifier for test data
-DTclf = tree.DecisionTreeClassifier().fit(Clusterstrain,Ytrain)
-Y_test_0 = DTclf.predict(Clusterstest)
+y = Ytrain.ravel()
+NBclf = GaussianNB().fit(Clusterstrain,y)
+Y_test_0 = NBclf.predict(Clusterstest)
 
-lin_svc = svm.LinearSVC(C=1.0).fit(Xtrain, Ytrain)
+lin_svc = svm.LinearSVC(C=1.0).fit(Xtrain, y)
 Y_test_1 = lin_svc.predict(Xtest)
 
-rbf_svc = svm.SVC(kernel='rbf', gamma=0.0001, C=10, probability=True).fit(Xtrain, Ytrain)
+rbf_svc = svm.SVC(kernel='rbf', gamma=0.0001, C=10, probability=True).fit(Xtrain, y)
 Y_test_2 = rbf_svc.predict(Xtest)
 
 Y_testing = np.zeros((len(Y_test),3))
 for i in range (0,len(Y_test)):
-    if (Y_test_0 == 0 and Y_test_1 == 0 or
-        Y_test_1 == 0 and Y_test_2 == 0 or
-        Y_test_0 == 0 and Y_test_2 == 0 ):
+    if ((Y_test_0[i] == 0 and Y_test_1[i] == 0) or
+        (Y_test_1[i] == 0 and Y_test_2[i] == 0) or
+        (Y_test_0[i] == 0 and Y_test_2[i] == 0) ):
         Y_testing[i,0] = 1
-    elif (Y_test_0 == 1 and Y_test_1 == 1 or
-        Y_test_1 == 1 and Y_test_2 == 1 or
-        Y_test_0 == 1 and Y_test_2 == 1 ):
+    elif((Y_test_0[i] == 1 and Y_test_1[i] == 1) or
+         (Y_test_1[i] == 1 and Y_test_2[i] == 1) or
+         (Y_test_0[i] == 1 and Y_test_2[i] == 1) ):
         Y_testing[i,1] = 1
-    elif (Y_test_0 == 3 and Y_test_1 == 3 or
-        Y_test_1 == 3 and Y_test_2 == 3 or
-        Y_test_0 == 3 and Y_test_2 == 3 ):
+    elif((Y_test_0[i] == 3 and Y_test_1[i] == 3) or
+         (Y_test_1[i] == 3 and Y_test_2[i] == 3) or
+         (Y_test_0[i] == 3 and Y_test_2[i] == 3) ):
+        Y_testing[i,2] = 1
+    else:
+        print 'agreement not found'
         Y_testing[i,2] = 1
         
 np.savetxt('prediction.csv',Y_testing,fmt='%.2d',delimiter=',')
